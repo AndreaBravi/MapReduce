@@ -62,7 +62,7 @@ class MRData(object):
 
         return X
 
-    def _nan_out_of_range(self, data):
+    def _nan_out_of_range(self, data, limits):
         """
 		Place a NaNs in those elements of the data matrix that are
 		outside of the values specified in limits
