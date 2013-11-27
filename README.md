@@ -12,6 +12,7 @@ Description of the files in the repository:
 - The list of bash commands to setup HDFS and run MapReduce: runjob
 - The script to be run during Map: mapper.py
 - The script to be run during Reduce: reducer.py
+- Module for data processing used by mapper and reducer: utilities.py
 - The dataset: data.txt
 - The report of the analysis: report.pdf
 
