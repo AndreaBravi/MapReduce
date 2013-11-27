@@ -17,7 +17,7 @@ class MRData(object):
 
         Parameters
         ----------
-        stream : stream or file
+        stream : file stream
 
         Returns
         -------
@@ -34,10 +34,13 @@ class MRData(object):
 
     def process(self, X, limits=False, normalize=False):
         """
-        Process the matrix X
+        Process the matrix X by eliminating NaNs (substituted with the median of
+        the relative feature).
 
-        Values out of the ranges specified in limits are forced to be NaNs, then
-        the NaNs are substituted with the median value of the relative feature.
+        Optional: normalize, exclude samples out of range
+
+        Values out of the ranges specified in "limits" are substituted with the
+        median of the relative feature.
 
         Parameters
         ----------
@@ -46,6 +49,8 @@ class MRData(object):
         limits : list of tuples or False
                  The list must have len=n_features, each tuple is defined as
                  (minimum acceptable entry, maximal acceptable entry)
+        normalize : bool, default=False
+                    Subtract mean and divide by standard deviation
 
         Returns
         -------
@@ -71,6 +76,9 @@ class MRData(object):
         ----------
         data : array, shape=[n_samples, n_features]
                Data array
+        limits : list of tuples or False
+                 The list must have len=n_features, each tuple is defined as
+                 (minimum acceptable entry, maximal acceptable entry)
         """
         for col in range(data.shape[1]):
             lmin, lmax = limits[col]
@@ -133,6 +141,8 @@ class MRLogisticRegression(object):
 			Feature matrix
 		y : array, shape=[n_samples, 1]
 			Outcome vector
+        fit_intercept : bool, default=False
+                        Add the intercept to the model
 
 		Returns
 		-------
