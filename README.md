@@ -14,3 +14,6 @@ Description of the files in the repository:
 - The script to be run during Reduce: reducer.py
 - The dataset: data.txt
 - The report of the analysis: report.pdf
+
+Data processing:
+- Map step: each row in data.txt is filtered from unreasonable values (decided a priori) and cleaned from missing values. Then, the -- ok
