@@ -9,12 +9,13 @@ from utilities import MRLogisticRegression, MRData
 model = MRLogisticRegression()
 
 # Extracting data
-data = MRData(sys.stdin)
+data = MRData()
+X, y = data.process(sys.stdin)
 
 # Computing gradient and Hessian
-g, H = model.mapper(data.X, data.y)
+g, H = model.mapper(X, y)
 
 # Printing mapper results
-key = encode(dumps(data.X[0, :]))
+key = encode(dumps(X[0, :]))
 value = encode(dumps((g, H)))
 print >> sys.stdout, "%s\t%s" % (key, value)
