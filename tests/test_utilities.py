@@ -18,12 +18,13 @@ limits = [(0, 1),  # Outcome
           (0, 30),  # Number of times 60-89 days past due
           (0, 50)]  # Number of dependents
 
-def test_MRData_process():
+def test_MRData_read_and_process():
     data = MRData()
 
     line = '0,0.7,20\n1,0.3,40\n1,0.5,20'
 
-    X, y = data.process(StringIO(line))
+    X, y = data.read(StringIO(line))
+    X = data.process(X, normalize=True)
 
     expected_result = np.array([[ 1.22474487, -0.70710678],
                                 [-1.22474487,  1.41421356],
@@ -103,3 +104,4 @@ def test_MRLogisticRegression_reducer():
 
     assert_array_equal(result, expected_result)
 
+test_MRData_read_and_process()

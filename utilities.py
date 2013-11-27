@@ -5,31 +5,15 @@ from scipy.stats import nanmedian
 
 INF = np.Inf
 
-# Pre-specified limits of the variables
-limits = [(0, 1),  # Outcome
-          (0, 1),  # Revolving utilization
-          (20, 100),  # Age
-          (0, 30),  # Number of times 30-59 days past due
-          (0, 1),  # Debt ratio
-          (0, INF),  # Monthly income
-          (0, 30),  # Number open credit lines
-          (0, 10),  # Number of times 90 days or more past due
-          (0, 10),  # Number of real estate loans
-          (0, 30),  # Number of times 60-89 days past due
-          (0, 50)]  # Number of dependents
-
 class MRData(object):
     """
 
 	"""
-    def process(self, stream):
+    def read(self, stream):
         """
-        Process the input stream and returns a clean dataset. It assumes that
-        the input data has shape=[n_samples, n_features], where the first column
-        represents the outcome.
-
-        Values out of the ranges specified in limits are forced to be NaNs, then
-        the NaNs are substituted with the median value of the relative feature.
+        Process the input stream and returns a dataset. It assumes that
+        the input data has shape=[n_samples, 1 + n_features], where the first
+        column represents the outcome.
 
         Parameters
         ----------
@@ -37,18 +21,46 @@ class MRData(object):
 
         Returns
         -------
-        X : array, shape=[n_samples, n_features-1]
-            The processed feature matrix
+        X : array, shape=[n_samples, n_features]
+            The feature matrix
         y : array, shape=[n_samples, 1]
             The outcome vector
         """
         data = np.genfromtxt(stream, delimiter=',')
-        data = self._nan_out_of_range(data)
-        data = self._clean_nans(data)
 
         y = np.array(data[:, 0], ndmin=2).T
-        X = self._normalize(data[:, 1:])
+        X = data[:, 1:]
         return X, y
+
+    def process(self, X, limits=False, normalize=False):
+        """
+        Process the matrix X
+
+        Values out of the ranges specified in limits are forced to be NaNs, then
+        the NaNs are substituted with the median value of the relative feature.
+
+        Parameters
+        ----------
+        X : array, shape=[n_samples, n_features]
+            The feature matrix
+        limits : list of tuples or False
+                 The list must have len=n_features, each tuple is defined as
+                 (minimum acceptable entry, maximal acceptable entry)
+
+        Returns
+        -------
+        X : array, shape=[n_samples, n_features-1]
+            The processed feature matrix
+        """
+        if limits:
+            X = self._nan_out_of_range(X, limits)
+
+        X = self._clean_nans(X)
+
+        if normalize:
+            X = self._normalize(X)
+
+        return X
 
     def _nan_out_of_range(self, data):
         """
@@ -111,7 +123,7 @@ class MRLogisticRegression(object):
     mapper : Computes gradient and Hessian
     reducer : Computes coefficients of the model
 	"""
-    def mapper(self, X, y):
+    def mapper(self, X, y, fit_intercept=False):
         """
 		Compute gradient and Hessian
 
@@ -129,6 +141,8 @@ class MRLogisticRegression(object):
 		H : array, shape=[n_features, n_features]
 			Hessian matrix
 		"""
+        if fit_intercept:
+            X = np.hstack([np.ones([X.shape[0], 1]), X])
         self._check_dimensionality(X, y)
         b = np.zeros([X.shape[1], 1])
         g = self._gradient(X, y, b)
@@ -169,11 +183,14 @@ class MRLogisticRegression(object):
         return 1 / (1 + np.exp(-np.dot(x, b)))
 
     def _check_dimensionality(self, X, y):
-        if y.shape[1] != 1 or X.shape[0] < X.shape[1]:
-            return -1
+        if y.shape[1] != 1:
+            raise MRException('y should be a vector, not a matrix')
+        if  X.shape[0] < X.shape[1]:
+            raise MRException('More samples are needed to proceed')
 
 
-
+class MRException(Exception):
+    pass
 
 
 
