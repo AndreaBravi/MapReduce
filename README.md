@@ -1,5 +1,5 @@
-Predicting default for Shopify
-==============================
+Predicting default with MapReduce
+=================================
 
 
 Which factors predict the risk of incurring in financial distress?
