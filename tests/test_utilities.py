@@ -2,7 +2,7 @@ from nose.tools import eq_ as assert_equal
 from numpy.testing.utils import assert_almost_equal, assert_array_equal
 import numpy as np
 from StringIO import StringIO
-from shopify.utilities import MRData, MRLogisticRegression
+from MapReduce.utilities import MRData, MRLogisticRegression
 
 INF = np.Inf
 
